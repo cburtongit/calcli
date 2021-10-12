@@ -1,0 +1,7 @@
+--- CO600 Project Log ---
+[12.10.21   12:51] Google API and Virtualenv
+                --> Virtualenv auto creates a .gitignore file that prevents it being commited
+                    had trouble and found a solution here: https://libzx.so/main/learning/2016/03/13/best-practice-for-virtualenv-and-git-repos.html
+                --> Set up google developer account, added details to bitwarden
+                --> created test even on 15.10.21 for use with my calendar event
+
