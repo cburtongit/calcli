@@ -1,6 +1,6 @@
 @echo off
 
-set "VIRTUAL_ENV=C:\Users\cb\Documents\University\Coursework\CO600 Project\co600-project\calendar"
+set "VIRTUAL_ENV=C:\Users\cb\Documents\University\CO600 Project\project\calendar"
 
 if defined _OLD_VIRTUAL_PROMPT (
     set "PROMPT=%_OLD_VIRTUAL_PROMPT%"

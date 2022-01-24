@@ -57,7 +57,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV 'C:\Users\cb\Documents\University\Coursework\CO600 Project\co600-project\calendar'
+set -gx VIRTUAL_ENV 'C:\Users\cb\Documents\University\CO600 Project\project\calendar'
 
 # https://github.com/fish-shell/fish-shell/issues/436 altered PATH handling
 if test (echo $FISH_VERSION | head -c 1) -lt 3

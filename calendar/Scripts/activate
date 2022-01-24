@@ -44,7 +44,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV='C:\Users\cb\Documents\University\Coursework\CO600 Project\co600-project\calendar'
+VIRTUAL_ENV='C:\Users\cb\Documents\University\CO600 Project\project\calendar'
 if ([ "$OSTYPE" = "cygwin" ] || [ "$OSTYPE" = "msys" ]) && $(command -v cygpath &> /dev/null) ; then
     VIRTUAL_ENV=$(cygpath -u "$VIRTUAL_ENV")
 fi
