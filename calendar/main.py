@@ -40,6 +40,11 @@ def main():
         open('events.csv')
     except FileNotFoundError:
         open('events.csv', 'a')
+        eventFile = open('events.csv', 'a')
+        eventFile.write("eventID,year,month,day,timeStart,timeEnd,title,notes")
+        eventFile.write(os.linesep)
+        eventFile.close()
+
 
     # create a csv reader to scan events
     with open('events.csv') as csv_file:
