@@ -1,14 +1,29 @@
 # Author C.J. Burton
 import csv
 import os.path
-from os import path
+from os import path, system, name
 import calendar
 from datetime import date
 
 
-def createEvent():
-    # create local event
+def interactiveMode(writer):
     pass
+
+
+
+def createEvent(writer, eid, y, m, d, ts, te, t, n):
+    writer.writerow([eid, y, m, d, ts, te, t, n])
+
+
+def createEventInteractive(writer):
+    # clear screen (UNIX only)
+    system('clear')
+    print(""" --- You are creating an event. --- \n
+            Please enter the date:\n
+            e.g. '01 04 2022' for the 1st of April, 2022.\n\n""")
+    userDate = input(" ---> ").split(" ")
+    print(userDate)
+
 
 
 def deleteEvent():
@@ -50,8 +65,12 @@ def main():
     with open('events.csv') as csv_file:
         csvReader = csv.reader(csv_file, delimiter=',')
 
+    # --- CALENDAR MAINLOOP ---
+
+    system("clear")
     # draw a basic calendar for barebones functionality
     drawCal()
+    #createEventInteractive(csvReader)
 
 if __name__ == "__main__":
     main()
