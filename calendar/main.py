@@ -18,12 +18,13 @@ def createEvent(writer, eid, y, m, d, ts, te, t, n):
 def createEventInteractive(writer):
     # clear screen (UNIX only)
     system('clear')
-    print(""" --- You are creating an event. --- \n
-            Please enter the date:\n
-            e.g. '01 04 2022' for the 1st of April, 2022.\n\n""")
-    userDate = input(" ---> ").split(" ")
-    print(userDate)
+    print(" --- You are creating an event. --- \n")
 
+    userYear = input("Year:  \n")
+    userMonth = input("Month:  \n")
+    userDay = input("Date:  \n")
+
+    printf("Date entered: %s - %s - %s\n", userDay, userMonth, userYear)
 
 
 def deleteEvent():
@@ -70,7 +71,8 @@ def main():
     system("clear")
     # draw a basic calendar for barebones functionality
     drawCal()
-    #createEventInteractive(csvReader)
+    createEventInteractive(csvReader)
+
 
 if __name__ == "__main__":
     main()
