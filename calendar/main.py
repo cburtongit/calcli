@@ -11,8 +11,8 @@ def interactiveMode(writer):
 
 
 
-def createEvent(writer, eid, y, m, d, ts, te, t, n):
-    writer.writerow([eid, y, m, d, ts, te, t, n])
+def createEvent(writer, eid, date, tstart, tend, title):
+    writer.writerow([eid, date, tstart, tend, title])
 
 
 def createEventInteractive(writer):
@@ -24,7 +24,8 @@ def createEventInteractive(writer):
     userMonth = input("Month:  \n")
     userDay = input("Date:  \n")
 
-    printf("Date entered: %s - %s - %s\n", userDay, userMonth, userYear)
+    date_print = "You have entered:  %s-%s-%s.\n" % (userDay, userMonth, userYear)
+    print(date_print)
 
 
 def deleteEvent():
@@ -38,7 +39,14 @@ def editEvent(event):
 
 
 def listEvents():
-    # list all local events
+    # list upcoming events for a specific time interval
+    # e.g.  listEvents(w) will return all events for the next 7 days
+    #       listEvents(m) will return all events for the next 30 days
+    #       listEvents() will return all events from the current date
+    pass
+
+def searchEvents():
+    # look for a specific event
     pass
 
 
@@ -57,7 +65,7 @@ def main():
     except FileNotFoundError:
         open('events.csv', 'a')
         eventFile = open('events.csv', 'a')
-        eventFile.write("eventID,year,month,day,timeStart,timeEnd,title,notes")
+        eventFile.write("eventID,date,timeStart,timeEnd,title")
         eventFile.write(os.linesep)
         eventFile.close()
 
@@ -76,3 +84,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
