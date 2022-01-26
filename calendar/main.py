@@ -60,12 +60,6 @@ def listEventsInteractive(reader):
     print("Not yet implemented")
 
 
-# look for a specific event in events.csv
-def searchEvents():
-    # NYI
-    print("Not yet implemented")
-
-
 # Draw a quick calendar (no events) 
 def drawCal(date):
     current_year = int(date.strftime("%y"))
@@ -74,14 +68,28 @@ def drawCal(date):
 
 
 # TUI for drawing a calendar on a specific month
-def drawCal():
-    print("")
+def drawCalInteractive():
+    system("clear")
+    drawCal(date.today())
+    userYear = input("--> For a specific year/month, type 's'.\nTo return to main menu, press ENTER:  \n")
+    if userYear == "s":
+        done = 0
+        while done == 0:
+            userYear = input("Year (e.g 2022, 2030, 1991):  ")
+            userMonth = input("Month (e.g. for Febuary enter '02'):  ")
+            try:
+                print(calendar.month(int(userYear[2:]), int(user_month)))
+                done = 1
+            except Exception as e:
+                print("Unrecognised format, please retry.\n")
+                if input("Try again? (y/n):  ") != "y":
+                    done = 1
 
 
 # help menu for interactive mode
 def help():
     system("clear")
-    print("Availible Commands:\n\n--> c       > Check your calendar\n--> n       > Create a new event\n--> d       > Delete an event\n--> e       > Edit an event\n--> l       > List all events\n\n--> exit    > Close the program\n--> help    > Show this dialog\n")
+    print("Availible Commands:\n-------------------\n--> c       > Check your calendar\n--> n       > Create a new event\n--> d       > Delete an event\n--> e       > Edit an event\n--> l       > List all events\n\n--> exit    > Close the program\n--> help    > Show this dialog\n")
 
 
 # interactive menu for when the user wants to do multiple things
@@ -91,6 +99,7 @@ def menuInteractive(reader):
     print("--> Welcome to Calcli! \nAuthor: C. J. Burton, cjamesburton@outlook.com\n\n")
     drawCal(date.today())
     print("\n\n")
+    print("Availible Commands:\n-------------------\n--> c       > Check your calendar\n--> n       > Create a new event\n--> d       > Delete an event\n--> e       > Edit an event\n--> l       > List all events\n\n--> exit    > Close the program\n--> help    > Show this dialog\n")
 
     done = 0
     while done == 0:
