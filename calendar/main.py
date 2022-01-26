@@ -28,14 +28,20 @@ def createEventInteractive(writer):
 
 # deletes an event and removes corresponding line in events.csv file
 def deleteEvent():
-    # delete local event
-    pass
+    # NYI
+    print("Not yet implemented")
+
+
+# TUI for deleteEvent
+def deleteEventInteractive(reader):
+    # NYI
+    print("Not yet implemented")
 
 
 # modifies an event and writes the new line to the file
 def editEvent(event):
-    # edit local event
-    pass
+    # NYI
+    print("Not yet implemented")
 
 
 # list upcoming events for a specific time interval
@@ -45,13 +51,19 @@ def listEvents():
     # e.g.  listEvents(w) will return all events for the next 7 days
     #       listEvents(m) will return all events for the next 30 days
     #       listEvents() will return all events from the current date
-    pass
+    print("Not yet implemented")
+
+
+# TUI for listEvents()
+def listEventsInteractive(reader):
+    # NYI
+    print("Not yet implemented")
 
 
 # look for a specific event in events.csv
 def searchEvents():
     # NYI
-    pass
+    print("Not yet implemented")
 
 
 # Draw a quick calendar (no events) 
@@ -60,38 +72,52 @@ def drawCal(date):
     current_month = int(date.strftime("%m"))
     print(calendar.month(current_year, current_month))
 
+
+# TUI for drawing a calendar on a specific month
+def drawCal():
+    print("")
+
+
+# help menu for interactive mode
+def help():
+    system("clear")
+    print("Availible Commands:\n\n--> c       > Check your calendar\n--> n       > Create a new event\n--> d       > Delete an event\n--> e       > Edit an event\n--> l       > List all events\n\n--> exit    > Close the program\n--> help    > Show this dialog\n")
+
+
 # interactive menu for when the user wants to do multiple things
 def menuInteractive(reader):
     # Greeter and calendar info
     system("clear")
-    print("""
-     ----- Welcome to Calcli! ------\n
-    A terminal Calendar application by C. J. Burton, any bugs/issues/feeback please
-    email me at cjamesburton@outlook.com
-    """)
+    print("--> Welcome to Calcli! \nAuthor: C. J. Burton, cjamesburton@outlook.com\n\n")
     drawCal(date.today())
     print("\n\n")
 
-    """
-    # Controls
-    userSelection = {
-            "help"  : print(">HELP MESSAGE HERE<"),
-            "n"     : createEventInteractive(reader),
-            "d"     : deleteEventInteractive(reader),
-            "l"     : listEventsInteractive(reader),
-            "c"     : drawCal(date.today())
-    }
-    """
-
     done = 0
-    while done != 0:
-        userInput = input("--->  ")
+    while done == 0:
+        userInput = input(">  ")
         if userInput == "exit":
             done = 1
             exit()
-        # else ifs here
+        elif userInput == "help":
+            # print help dialog
+            help()
+        elif userInput == "n":
+            # new event
+            createEventInteractive(reader)
+        elif userInput == "d":
+            # delete event
+            deleteEventInteractive(reader)
+        elif userInput == "e":
+            # edit event
+            editEventInteractive(reader)
+        elif userInput == "l":
+            # list events
+            listEventsInteractive(reader)
+        elif userInput == "c":
+            # check calendar
+            drawCalInteractive()
         else:
-            print("Your input is:  " + userInput + "\n")
+            print("Unrecognised command, type 'help' for a list of commands.\n")
 
 
 def main():
