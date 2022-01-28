@@ -67,7 +67,9 @@ def listEvents():
 # TUI for listEvents()
 def listEventsInteractive(reader):
     # NYI
-    print("Not yet implemented")
+    print("NOT YET FINISHED\n")
+    for line in reader:
+        print(line)
 
 
 # Draw a quick calendar (no events) 
@@ -157,15 +159,14 @@ def main():
 
 
     # create a csv reader to scan events
-    with open('events.csv') as events:
-        csvReader = csv.reader(events, delimiter=',')
+    events = open("events.csv", "r+")
+    csvReader = csv.reader(events, delimiter=',')
 
     # -- SYSTEM ARGS --
     if len(sys.argv) == 1:
         menuInteractive(csvReader)
     else:
-        system("clear")
-        drawCal(date.today())
+        print("Modular mode with args and stdout coming soon!\n")
 
 
 
