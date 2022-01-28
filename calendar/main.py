@@ -68,8 +68,15 @@ def listEvents():
 def listEventsInteractive(reader):
     # NYI
     print("NOT YET FINISHED\n")
+    # skip the header (first row)
+    next(reader)
+    print("Showing All Events:\n")
     for line in reader:
-        print(line)
+        item = ""
+        item += line[1][:-2]
+        item += "-" + line[1][4:-2]
+        item += "-" + line[1][4:]
+        print(item)
 
 
 # Draw a quick calendar (no events) 
