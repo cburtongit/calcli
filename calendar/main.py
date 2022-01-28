@@ -1,9 +1,10 @@
-# Author C.J. Burton
+# Author C.J. Burtonprint("Not yet implemented")
 import csv
 import os.path
 from os import path, system, name, sys
 import calendar
-from datetime import date
+from datetime import date, datetime
+import dates_header
 
 
 
@@ -14,17 +15,26 @@ def createEvent(writer, eid, date, tstart, tend, title):
 
 # TUI for creating an event
 def createEventInteractive(writer):
-    # clear screen (UNIX only)
     system('clear')
     print(" --- You are creating an event. --- \n")
 
-    userYear = input("Year:  \n")
-    userMonth = input("Month:  \n")
-    userDay = input("Date:  \n")
+    # Sanity checks for date input
+    done = 0
+    while done == 0:
+        userDate = input("Please enter your date (YYYY MM DD):\ne.g. 14th of Febuary 2022 as '2022 02 14' (or 'cancel' to exit back to the main menu)\n\n>  ")
+        if userDate.lower() == "cancel":
+            done = 1
+            break
+        if len(userDate) != 10:
+            print("Bad format, please retry.\n")
+        try:
+            uDate = datetime.strptime(userDate, "%Y %m %d")
+            print(uDate)
+        except Exception as e:
+            print("Unrecognised date, please retry.\n")
+            print(e)
 
-    date_print = "You have entered:  %s-%s-%s.\n" % (userDay, userMonth, userYear)
-    print(date_print)
-
+   
 
 # deletes an event and removes corresponding line in events.csv file
 def deleteEvent():
@@ -71,14 +81,19 @@ def drawCal(date):
 def drawCalInteractive():
     system("clear")
     drawCal(date.today())
+    # prompt them to either find a specific month/year or return to main menu
     userYear = input("--> For a specific year/month, type 's'.\nTo return to main menu, press ENTER:  \n")
     if userYear == "s":
         done = 0
         while done == 0:
             userYear = input("Year (e.g 2022, 2030, 1991):  ")
-            userMonth = input("Month (e.g. for Febuary enter '02'):  ")
+            userMonth = input("Month (e.g. for Febuary enter '2'):  ")
+            # just incase the user didn't read the guide
+            if userMonth[0] == '0':
+                userMonth = userMonth[1:]
+            # incase user enters wrong date, prompt for retry
             try:
-                print(calendar.month(int(userYear[2:]), int(user_month)))
+                print(calendar.month(int(userYear), int(userMonth)))
                 done = 1
             except Exception as e:
                 print("Unrecognised format, please retry.\n")
@@ -142,8 +157,8 @@ def main():
 
 
     # create a csv reader to scan events
-    with open('events.csv') as csv_file:
-        csvReader = csv.reader(csv_file, delimiter=',')
+    with open('events.csv') as events:
+        csvReader = csv.reader(events, delimiter=',')
 
     # -- SYSTEM ARGS --
     if len(sys.argv) == 1:
