@@ -7,10 +7,23 @@ from datetime import date, datetime
 import dates_header
 
 
+events = "events.csv"
+help_text = """Availible Commands:
+-------------------
+--> c       > Check your calendar
+--> n       > Create a new event
+--> d       > Delete an event
+--> e       > Edit an event
+--> l       > List all events\n
+--> exit    > Close the program
+--> help    > Show this dialog\n
+"""
+
 
 # Create an event and write to the events.csv file
 def createEvent(writer, eid, date, tstart, tend, title):
-    writer.writerow([eid, date, tstart, tend, title])
+    open(events, "a")
+    #writer.writerow([eid, date, tstart, tend, title])
 
 
 # TUI for creating an event
@@ -34,7 +47,6 @@ def createEventInteractive(writer):
             print("Unrecognised date, please retry.\n")
             print(e)
 
-   
 
 # deletes an event and removes corresponding line in events.csv file
 def deleteEvent():
@@ -55,27 +67,26 @@ def editEvent(event):
 
 
 # list upcoming events for a specific time interval
-def listEvents():
-    # NYI
-    # list upcoming events for a specific time interval
-    # e.g.  listEvents(w) will return all events for the next 7 days
-    #       listEvents(m) will return all events for the next 30 days
-    #       listEvents() will return all events from the current date
-    print("Not yet implemented")
+def listEvents(reader):
+    eventList = list(reader)
+    # remove the header from the csv file
+    eventList.pop(0)
+    return eventList
 
 
 # TUI for listEvents()
 def listEventsInteractive(reader):
-    # NYI
+    # TODO:
+    # only show upcoming items
+    # give args to specify how many items to show
     print("NOT YET FINISHED\n")
-    # skip the header (first row)
-    next(reader)
-    print("Showing All Events:\n")
-    for line in reader:
-        item = ""
-        item += line[1][:-2]
-        item += "-" + line[1][4:-2]
-        item += "-" + line[1][4:]
+    eventList = listEvents(reader)
+    print("ID     Date       Time                Description")
+    for event in eventList:
+        item = event[0] + " | "
+        item += event[1] + " | "
+        item += "(" + event[2] + " until " + event[3] + ") | "
+        item += event[4]
         print(item)
 
 
@@ -113,17 +124,16 @@ def drawCalInteractive():
 # help menu for interactive mode
 def help():
     system("clear")
-    print("Availible Commands:\n-------------------\n--> c       > Check your calendar\n--> n       > Create a new event\n--> d       > Delete an event\n--> e       > Edit an event\n--> l       > List all events\n\n--> exit    > Close the program\n--> help    > Show this dialog\n")
+    print(help_text)
 
 
 # interactive menu for when the user wants to do multiple things
 def menuInteractive(reader):
     # Greeter and calendar info
     system("clear")
-    print("--> Welcome to Calcli! \nAuthor: C. J. Burton, cjamesburton@outlook.com\n\n")
+    print("--> Welcome to Calcli! \nBugs/Feedback, contact: C. J. Burton, cjamesburton@outlook.com\n")
     drawCal(date.today())
-    print("\n\n")
-    print("Availible Commands:\n-------------------\n--> c       > Check your calendar\n--> n       > Create a new event\n--> d       > Delete an event\n--> e       > Edit an event\n--> l       > List all events\n\n--> exit    > Close the program\n--> help    > Show this dialog\n")
+    print(help_text)
 
     done = 0
     while done == 0:
@@ -156,18 +166,18 @@ def menuInteractive(reader):
 def main():
     # Attempt to open events file, create one if there isn't already
     try:
-        open('events.csv')
+        open(events)
     except FileNotFoundError:
-        open('events.csv', 'a')
-        eventFile = open('events.csv', 'a')
+        # create the file, input the headers and then start a new line
+        open(events, "a")
+        eventFile = open(events, "a")
         eventFile.write("eventID,date,timeStart,timeEnd,title")
         eventFile.write(os.linesep)
         eventFile.close()
 
-
     # create a csv reader to scan events
-    events = open("events.csv", "r+")
-    csvReader = csv.reader(events, delimiter=',')
+    eventsFile = open(events, "r+")
+    csvReader = csv.reader(eventsFile, delimiter=",")
 
     # -- SYSTEM ARGS --
     if len(sys.argv) == 1:
@@ -179,4 +189,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
