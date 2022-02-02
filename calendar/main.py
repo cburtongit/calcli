@@ -1,12 +1,12 @@
 # Author C.J. Burtonprint("Not yet implemented")
 import csv
-import os.path
+import os
 from os import path, system, name, sys
 import calendar
 from datetime import date, datetime
 
 
-events = "events.csv"
+events = path.relpath("./events.csv")
 help_text = """Availible Commands:
 -------------------
 --> c       > Check your calendar
@@ -187,17 +187,17 @@ def menuInteractive(reader):
 def main():
     # Attempt to open events file, create one if there isn't already
     try:
-        open(events)
+        with open(os.path.join(sys.path[0], "events.csv"), "r") as ef:
+            print(ef.read())
     except FileNotFoundError:
         # create the file, input the headers and then start a new line
-        open(events, "a")
-        eventFile = open(events, "a")
-        eventFile.write("eventID,date,timeStart,timeEnd,title")
-        eventFile.write(os.linesep)
-        eventFile.close()
+        with open(os.path.join(sys.path[0], "events.csv"), "a") as ef:
+            ef.write("eventID,date,timeStart,timeEnd,title")
+            ef.write(os.linesep)
+            ef.close()
 
     # create a csv reader to scan events
-    eventsFile = open(events, "r+")
+    eventsFile = open(os.path.join(sys.path[0], "events.csv"), "r")
     csvReader = csv.reader(eventsFile, delimiter=",")
 
     # -- SYSTEM ARGS --
