@@ -4,7 +4,6 @@ import os.path
 from os import path, system, name, sys
 import calendar
 from datetime import date, datetime
-import dates_header
 
 
 events = "events.csv"
@@ -21,13 +20,17 @@ help_text = """Availible Commands:
 
 
 # Create an event and write to the events.csv file
-def createEvent(writer, eid, date, tstart, tend, title):
-    open(events, "a")
-    #writer.writerow([eid, date, tstart, tend, title])
+def createEvent(reader, eid, date, tstart, tend, title):
+    with open(events, "w") as eventFile:
+        writer = csv.writer(eventFile)
+        writer.writerow(listEvents(reader))
+        writer.writerow([eid, date, tstart, tend, title])
 
 
 # TUI for creating an event
-def createEventInteractive(writer):
+def createEventInteractive(reader):
+    # TODO:
+    # make better input checking
     system('clear')
     print(" --- You are creating an event. --- \n")
 
@@ -37,15 +40,39 @@ def createEventInteractive(writer):
         userDate = input("Please enter your date (YYYY MM DD):\ne.g. 14th of Febuary 2022 as '2022 02 14' (or 'cancel' to exit back to the main menu)\n\n>  ")
         if userDate.lower() == "cancel":
             done = 1
-            break
+            return 0
         if len(userDate) != 10:
             print("Bad format, please retry.\n")
+        else:
+            done = 1
         try:
-            uDate = datetime.strptime(userDate, "%Y %m %d")
+            uDate = str(datetime.strptime(userDate, "%Y %m %d"))[:1-10]
             print(uDate)
         except Exception as e:
             print("Unrecognised date, please retry.\n")
             print(e)
+    done = 0
+    while done == 0:
+        userStartTime = input("Start Time (HH:MM) >  ")
+        if len(userStartTime) != 5:
+            print("Bad format, please retry.\n")
+        else:
+            done = 1
+    done = 0
+    while done == 0:
+        userEndTime = input("End Time (HH:MM) >  ")
+        if len(userStartTime) != 5:
+            print("Bad format, please retry.\n")
+        else:
+            done = 1
+    done = 0
+    while done == 0:
+        userTitle = input("Description >  ")
+        if len(userTitle) == 0:
+            print("Bad format, please retry.\n")
+        else:
+            done = 1
+    createEvent(reader, "test00", uDate, userStartTime, userEndTime, userTitle)
 
 
 # deletes an event and removes corresponding line in events.csv file
@@ -60,17 +87,9 @@ def deleteEventInteractive(reader):
     print("Not yet implemented")
 
 
-# modifies an event and writes the new line to the file
-def editEvent(event):
-    # NYI
-    print("Not yet implemented")
-
-
 # list upcoming events for a specific time interval
 def listEvents(reader):
     eventList = list(reader)
-    # remove the header from the csv file
-    eventList.pop(0)
     return eventList
 
 
@@ -83,8 +102,10 @@ def listEventsInteractive(reader):
     eventList = listEvents(reader)
     print("ID     Date       Time                Description")
     for event in eventList:
+        if event[0] == "eventID": continue
         item = event[0] + " | "
-        item += event[1] + " | "
+        fDate = str(datetime.strptime(event[1], "%Y%m%d"))[:1-10]
+        item += "" + fDate + " | "
         item += "(" + event[2] + " until " + event[3] + ") | "
         item += event[4]
         print(item)
