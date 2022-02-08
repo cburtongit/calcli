@@ -40,6 +40,3 @@ def main():
             eventsFile.write("date,timeStart,timeEnd,title")
             eventsFile.write(os.linesep)
             eventsFile.close()
-
-if __name__ == "__main__":
-    main()

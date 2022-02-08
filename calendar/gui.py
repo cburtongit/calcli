@@ -24,47 +24,42 @@ def createEventInteractive():
     # make better input checking
     # DATE FORMATTING IDEA: try/catch using datetime.strp() format
     system('clear')
-    print(" --- You are creating an event. --- \n")
-
-    # Sanity checks for date input
     done = 0
     while done == 0:
-        userDate = input("Please enter your date (YYYY MM DD):\ne.g. 14th of Febuary 2022 as '2022 02 14' (or 'cancel' to exit back to the main menu)\n\n>  ")
-        if userDate.lower() == "cancel":
-            done = 1
-            return 0
-        if len(userDate) != 10:
-            print("Bad format, please retry.\n")
-        else:
-            done = 1
+        userDate = input("Event Date (e.g. '01 06 2022' for the 1st of June, 2022): \n")
         try:
-            uDate = str(datetime.strptime(userDate, "%Y %m %d"))[:1-10]
-            print(uDate)
+            uDate = datetime.strptime(userDate, "%d %m %Y")[:1-10]
+            done = 1
+        except ValueError:
+            print("Bad formatting, Please retry.\n")
+    done = 0
+    while done == 0:
+        userStartTime = input("Start time (e.g. '10:30' for 10:30AM or '20:45' for 8:45PM): ")
+        try:
+            uST = userStartTime.split(":")
+            int(uST[0]) < 25 == True;
+            int(uST[1]) < 61 == True;
+            done = 1
         except Exception as e:
-            print("Unrecognised date, please retry.\n")
             print(e)
+            print("Bad formatting, Please retry.\n")
     done = 0
     while done == 0:
-        userStartTime = input("Start Time (HH:MM) >  ")
-        if len(userStartTime) != 5:
-            print("Bad format, please retry.\n")
-        else:
+        userEndTime = input("End time (e.g. '10:30' for 10:30AM or '20:45' for 8:45PM): ")
+        try:
+            uET = userEndTime.split(":")
+            int(uST[0]) < 25 == True;
+            int(uST[1]) < 61 == True;
             done = 1
-    done = 0
-    while done == 0:
-        userEndTime = input("End Time (HH:MM) >  ")
-        if len(userStartTime) != 5:
-            print("Bad format, please retry.\n")
-        else:
-            done = 1
-    done = 0
-    while done == 0:
-        userTitle = input("Description >  ")
-        if len(userTitle) == 0:
-            print("Bad format, please retry.\n")
-        else:
-            done = 1
-    calcli.createEvent(uDate, userStartTime, userEndTime, userTitle)
+        except Exception as e:
+            print(e)
+            print("Bad formatting, Please retry.\n")
+    userDesc = input("Event description: ")
+    try:
+        calcli.createEvent(uDate, uST, uET, userDesc)
+        print("Event created.\n")
+    except Exception as e:
+        print("Error:\n" + str(e) + "\n")
 
 
 # TUI for deleteEvent
