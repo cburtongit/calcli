@@ -1,4 +1,4 @@
-eventID,date,startTime,endTime,description
-000000,20220201,1000,1100,Lecture in Templeman
-000001,20220202,1200,1300,Lecture in Cornwalis
-000002,20220204,1000,1100,Lecture in Darwin
+date,startTime,endTime,description
+20220201,1000,1100,Lecture in Templeman
+20220202,1200,1300,Lecture in Cornwalis
+20220204,1000,1100,Lecture in Darwin
