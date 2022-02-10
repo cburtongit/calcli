@@ -4,4 +4,15 @@
                     had trouble and found a solution here: https://libzx.so/main/learning/2016/03/13/best-practice-for-virtualenv-and-git-repos.html
                 --> Set up google developer account, added details to bitwarden
                 --> created test even on 15.10.21 for use with my calendar event
-
+[08/2/2022] Splitting TUI and Calcli main file
+            --> wanted scripting functionality in the future so decided to split the terminal interface and the core
+                functionality into separate files. If time permits, the plan is to implement a nicer, ncurses TUI
+                or in the future ship a graphical frontend.
+            --> had issues with circular imports and naming issues, changed main.py to calcli.py and created tui.py
+[10/2/2022] Issues with File writing
+            --> sorting a file was causing it to write an additional copy of the file to the bottom because of append mode.
+            --> fixed by changing file open from a single open with read/write permissions to 2 accesses, one read to
+                get the original, then sort it and then one write access to overwrite the file with the sorted list
+            --> called sortEvents() after createEvents() to make it so that if the user returns to the menu they always
+                have a sorted list. This isn't called every time menuInteractive() is called to save on resources as it
+                only needs to be sorted after a change so that a listEvents() call will return accurate results

@@ -1,4 +1,0 @@
-- Fix events.csv path
----> if called from another directory, the program will attempt to open the events.csv file from the
-     current working directory rather than next to main.py
-
