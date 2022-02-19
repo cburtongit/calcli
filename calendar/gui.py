@@ -101,8 +101,8 @@ def drawCalInteractive():
     drawCal(date.today())
     done = 0
     while done == 0:
-        userDate = input("Enter Date (e.g. '06 2022' for June, 2022)\nor.\n> ")
-        if userDate == "cancel":
+        userDate = input("For a specific date please enter in the format 'DD MM YYYY'\nor press ENTER to return to menu.\n")
+        if userDate == "cancel" or userDate == "":
             done = 1
             break
         try:
