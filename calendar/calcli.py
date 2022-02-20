@@ -16,10 +16,12 @@ def createEvent(date, tstart, tend, title):
         eventsFile.close()
 
 
-# deletes an event and removes corresponding line in events.csv file
-def deleteEvent():
-    # NYI
-    print("Not yet implemented")
+# writes a new eventList 
+def overwriteEventFile(eventList):
+    with open(events, "w") as eventsFile:
+        writer = csv.writer(eventsFile)
+        writer.writerows(eventList)
+        eventsFile.close()
 
 
 # list upcoming events for a specific time interval

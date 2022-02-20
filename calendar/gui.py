@@ -10,6 +10,7 @@ help_text = """Availible Commands:
 --> c       > Check your calendar
 --> n       > Create a new event
 --> l       > List all events
+--> d       > Manage events
 \n--> exit    > Close the program
 --> help    > Show this dialog"""
 
@@ -74,15 +75,8 @@ def createEventInteractive():
         print("Error:\n" + str(e) + "\n")
 
 
-# TUI for deleteEvent
-def deleteEventInteractive(reader):
-    # NYI
-    print("Not yet implemented")
-
-
 # TUI for listEvents()
-def listEventsInteractive():
-    eventList = calcli.listEvents()
+def listEventsInteractive(eventList):
     clear()
     print("#        Date          Time               Description")
     print("---------------------------------------------------------")
@@ -122,6 +116,24 @@ def listUpcomingInteractive(n):
         eventCounter += 1
         if eventCounter > n:
             break
+
+
+# allows user to delete/edit events
+def deleteEventsInteractive():
+    listEventsInteractive(calcli.listEvents())
+    eventList = calcli.listEvents()
+    done = 0
+    while done == 0:
+        userTargets = input("Select event number(s) to delete (e.g. '1 3 9 14 28'):  ")
+        try:
+            userTargets = list(map(int, userTargets.split(" ")))
+            for index in sorted(userTargets, reverse=True):
+                del eventList[index - 1]
+            done = 1
+            listEventsInteractive(eventList)
+            calcli.overwriteEventFile(eventList)
+        except Exception as e:
+            print("Bad input, please retry.")
 
 
 # Draw a quick calendar (no events) 
@@ -171,8 +183,6 @@ def clear():
 def menuInteractive():
     clear()
     calcli.sortEvents()
-    drawCal(date.today())
-    print("\n")
     listUpcomingInteractive(3)
     print("\n\n" + help_text)
     # user input menu
@@ -191,7 +201,10 @@ def menuInteractive():
             calcli.sortEvents()
         elif userInput == "l":
             # list events
-            listEventsInteractive()
+            listEventsInteractive(calcli.listEvents())
+        elif userInput == "d":
+            # delete/edit events
+            deleteEventsInteractive()
         elif userInput == "c":
             # check calendar
             drawCalInteractive()
