@@ -125,6 +125,9 @@ def deleteEventsInteractive():
     done = 0
     while done == 0:
         userTargets = input("Select event number(s) to delete (e.g. '1 3 9 14 28'):  ")
+        if userTargets == "":
+            done = 1
+            break
         try:
             userTargets = list(map(int, userTargets.split(" ")))
             for index in sorted(userTargets, reverse=True):
