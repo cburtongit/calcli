@@ -10,7 +10,7 @@ help_text = """Availible Commands:
 --> c       > Check your calendar
 --> n       > Create a new event
 --> l       > List all events
---> d       > Manage events
+--> d       > Delete events
 \n--> exit    > Close the program
 --> help    > Show this dialog"""
 
