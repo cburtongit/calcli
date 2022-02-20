@@ -51,7 +51,7 @@ def createEventInteractive():
                 uET[0] = "0" + uET[0]
             if int(uET[0]) >= int(uST[0]):
                 pass
-                if int(uET[1]) > int(uST[1]):
+                if int(uET[1]) >= int(uST[1]):
                     pass
                 else:
                     raise Exception("Warning: event ending before start time!")
@@ -102,6 +102,28 @@ def listEventsInteractive():
         eventCounter += 1
 
 
+# Lists next N number of UPCOMING EVENTS (no screen clearing)
+def listUpcomingInteractive(n):
+    eventList = calcli.getNextEvents()
+    print("Your next " + str(n) + " upcoming events:")
+    eventCounter = 1
+    for event in eventList:
+        if eventCounter < 10:
+            item = str(eventCounter) + "        "
+        else:
+            item = str(eventCounter) + "       "
+        fDate = str(datetime.strptime(event[0], "%Y%m%d"))[:1-10]
+        item += "" + fDate + "    "
+        itemStartTime = event[1][:2] + ":" + event[1][2:]
+        itemEndTime = event[2][:2] + ":" + event[2][2:] 
+        item += "(" + itemStartTime + " - " + itemEndTime + ")    "
+        item += event[3]
+        print(item)
+        eventCounter += 1
+        if eventCounter > n:
+            break
+
+
 # Draw a quick calendar (no events) 
 def drawCal(date):
     current_year = int(date.strftime("%y"))
@@ -120,8 +142,9 @@ def drawCalInteractive():
             done = 1
             break
         try:
-            userYear = int(userDate[-4:])
-            userMonth = int(userDate[:2])
+            userDate = userDate.split(" ")
+            userYear = int(userDate[2])
+            userMonth = int(userDate[1])
             print(calendar.month(int(userYear), int(userMonth)))
             done = 1
         except Exception as e:
@@ -148,7 +171,10 @@ def clear():
 def menuInteractive():
     clear()
     calcli.sortEvents()
-    print(help_text)
+    drawCal(date.today())
+    print("\n")
+    listUpcomingInteractive(3)
+    print("\n\n" + help_text)
     # user input menu
     done = 0
     while done == 0:

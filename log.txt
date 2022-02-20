@@ -16,3 +16,10 @@
             --> called sortEvents() after createEvents() to make it so that if the user returns to the menu they always
                 have a sorted list. This isn't called every time menuInteractive() is called to save on resources as it
                 only needs to be sorted after a change so that a listEvents() call will return accurate results
+[20/02/2022] Issues with American vs UK date
+            --> Inputing my date to find a specific month would have it so the month was first then the day
+                meaning searching for a date above the 12th would try and look for a 13th or 14th month and
+                so on
+            --> had issues with checking my time was correct, had to check that the end hour was the same or more
+                if it was the same, I had to THEN check wether or not the minute was higher (fixed with
+                a string split and targeting the middle index for month)

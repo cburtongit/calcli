@@ -31,6 +31,21 @@ def listEvents():
     return eventList
 
 
+# Gets next number of events from current date
+def getNextEvents():
+    currentDate = datetime.now().strftime('%Y%m%d')
+    with open(events, "r") as eventsFile:
+        csvReader = csv.reader(eventsFile, delimiter=",")
+        eventList = list(csvReader)
+        eventsFile.close()
+    for i in eventList:
+        if (i[0] <= currentDate):
+            eventList.remove(i)
+    # Strange bug where the first target item is not removed, this is a fix
+    del eventList[0]
+    return eventList
+
+
 # sorts the csv file by reading in the current file, sorting by date, then re-writing new list
 def sortEvents():
     # Note to self, r+ is read/write with file pointer at START of file, use a for appending
