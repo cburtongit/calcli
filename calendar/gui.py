@@ -9,17 +9,15 @@ events = os.path.join(sys.path[0], "events.csv")
 help_text = """Availible Commands:
 --> c       > Check your calendar
 --> n       > Create a new event
---> l       > List all events\n
---> exit    > Close the program
+--> l       > List all events
+\n--> exit    > Close the program
 --> help    > Show this dialog"""
 
 
 # TUI for creating an event
 def createEventInteractive():
-    # TODO:
-    # make better input checking
-    # DATE FORMATTING IDEA: try/catch using datetime.strp() format
     clear()
+    # Date
     done = 0
     while done == 0:
         userDate = input("Event Date (e.g. '01 06 2022' for the 1st of June, 2022): \n")
@@ -29,32 +27,45 @@ def createEventInteractive():
             done = 1
         except ValueError:
             print("Bad formatting, Please retry.\n")
+    # Start Time
     done = 0
     while done == 0:
-        userStartTime = input("Start time (e.g. '10:30' for 10:30AM or '20:45' for 8:45PM): ")
+        userStartTime = input("Start time (e.g. '09:30' for 10:30AM or '20:45' for 8:45PM): ")
         try:
             uST = userStartTime.split(":")
-            print(uDate)
+            if len(uST[0]) < 2:
+                uST[0] = "0" + uST[0]
             int(uST[0]) < 25 == True
             int(uST[1]) < 61 == True
             done = 1
         except Exception as e:
             print(e)
             print("Bad formatting, Please retry.\n")
+    # End Time
     done = 0
     while done == 0:
         userEndTime = input("End time (e.g. '10:30' for 10:30AM or '20:45' for 8:45PM): ")
         try:
             uET = userEndTime.split(":")
-            int(uST[0]) < 25 == True;
-            int(uST[1]) < 61 == True;
+            if len(uET[0]) < 2:
+                uET[0] = "0" + uET[0]
+            if int(uET[0]) >= int(uST[0]):
+                pass
+                if int(uET[1]) > int(uST[1]):
+                    pass
+                else:
+                    raise Exception("Warning: event ending before start time!")
+            else:
+                raise Exception("Warning: event ending before start time!")
+            int(uST[0]) < 25 == True
+            int(uST[1]) < 61 == True
             done = 1
         except Exception as e:
             print(e)
             print("Bad formatting, Please retry.\n")
+    # Description
     userDesc = input("Event description: ")
     try:
-        print(uDate)
         start = "" + str(uST[0]) + str(uST[1])
         end = "" + str(uET[0]) + str(uET[1])
         calcli.createEvent(uDate, start, end, userDesc)
@@ -71,18 +82,21 @@ def deleteEventInteractive(reader):
 
 # TUI for listEvents()
 def listEventsInteractive():
-    # TODO:
-    # only show upcoming items
-    # give args to specify how many items to show
     eventList = calcli.listEvents()
     clear()
-    print("#       Date       Time                Description")
+    print("#        Date          Time               Description")
+    print("---------------------------------------------------------")
     eventCounter = 1
     for event in eventList:
-        item = str(eventCounter) + "     | "
+        if eventCounter < 10:
+            item = str(eventCounter) + "        "
+        else:
+            item = str(eventCounter) + "       "
         fDate = str(datetime.strptime(event[0], "%Y%m%d"))[:1-10]
-        item += "" + fDate + " | "
-        item += "(" + event[1] + " until " + event[2] + ") | "
+        item += "" + fDate + "    "
+        itemStartTime = event[1][:2] + ":" + event[1][2:]
+        itemEndTime = event[2][:2] + ":" + event[2][2:] 
+        item += "(" + itemStartTime + " - " + itemEndTime + ")    "
         item += event[3]
         print(item)
         eventCounter += 1
@@ -121,11 +135,13 @@ def help():
     clear()
     print(help_text)
 
-# Clears the terminal using system calls based on what OS kernel is used
+# Clears the terminal using system calls based on what OS  is used
 def clear():
     if name == "nt":
+        # windows
         system("cls")
     else:
+        # *nix
         system("clear")
 
 # interactive menu for when the user wants to do multiple things
