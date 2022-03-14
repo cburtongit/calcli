@@ -10,7 +10,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+#SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
 def main():
@@ -34,15 +35,46 @@ def main():
         # Save the credentials for the next run
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
-
+    
     try:
         service = build('calendar', 'v3', credentials=creds)
+        
+        event = {
+        'summary': 'calCLI_TEST_EVENT',
+        #'location': '800 Howard St., San Francisco, CA 94103',
+        'description': 'event_description',
+        'start': {
+            'dateTime': '2023-05-28T09:00:00-07:00',
+            #'timeZone': 'America/Los_Angeles',
+        },
+        'end': {
+            'dateTime': '2023-05-28T17:00:00-07:00',
+            #'timeZone': 'America/Los_Angeles',
+        },
+        #'recurrence': [
+        #    'RRULE:FREQ=DAILY;COUNT=2'
+        #],
+        #'attendees': [
+        #    {'email': 'lpage@example.com'},
+        #    {'email': 'sbrin@example.com'},
+        #],
+        #'reminders': {
+        #    'useDefault': False,
+        #    'overrides': [
+        #    {'method': 'email', 'minutes': 24 * 60},
+        #    {'method': 'popup', 'minutes': 10},
+        #    ],
+        #},
+        }
+        event = service.events().insert(calendarId='primary', body=event).execute()
+        print('Event created: %s' % (event.get('htmlLink')))
 
+        # --- CALENDAR STARTS HERE --- >>
         # Call the Calendar API
         now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-        print('Getting the upcoming 10 events')
+        print('Getting the upcoming 20 events')
         events_result = service.events().list(calendarId='primary', timeMin=now,
-                                              maxResults=10, singleEvents=True,
+                                              maxResults=20, singleEvents=True,
                                               orderBy='startTime').execute()
         events = events_result.get('items', [])
 

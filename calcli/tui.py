@@ -2,6 +2,7 @@
 import csv, calendar, os
 from os import path, system, name, sys
 from datetime import date, datetime
+
 import calcli
 
 
@@ -99,19 +100,29 @@ def listEventsInteractive(eventList):
 # Lists next N number of UPCOMING EVENTS (no screen clearing)
 def listUpcomingInteractive(n):
     eventList = calcli.getNextEvents()
-    print("Your next " + str(n) + " upcoming events:")
+    print("Upcoming events:")
     eventCounter = 1
+    if len(eventList) == 0:
+        print("No offline events.")
+        return
     for event in eventList:
+        # format the number and appropriate whitespace
         if eventCounter < 10:
-            item = str(eventCounter) + "        "
+            item = "  " + str(eventCounter) + "      "
+        elif eventCounter < 100:
+            item = " " + str(eventCounter) + "      "
         else:
-            item = str(eventCounter) + "       "
-        fDate = str(datetime.strptime(event[0], "%Y%m%d"))[:1-10]
-        item += "" + fDate + "    "
+            item = str(eventCounter) + "      "
+        # build a string of the date, start time, end time and description
+        # format the date from file, remove time then split by [YYYY], [MM], [DD]
+        fDate = str(datetime.strptime(event[0], "%Y%m%d"))[:1-10].split("-")
+        # reform the list, reversing the element order whilst adding '-' between
+        item += fDate[2] + "-" + fDate[1] + "-" + fDate[0] + "    "
+        # format and store the start and end times from file
         itemStartTime = event[1][:2] + ":" + event[1][2:]
-        itemEndTime = event[2][:2] + ":" + event[2][2:] 
-        item += "(" + itemStartTime + " - " + itemEndTime + ")    "
-        item += event[3]
+        itemEndTime = event[2][:2] + ":" + event[2][2:]
+        # add formatted times and description
+        item += "(" + itemStartTime + " - " + itemEndTime + ")    " + event[3]
         print(item)
         eventCounter += 1
         if eventCounter > n:
@@ -204,7 +215,8 @@ def menuInteractive():
             calcli.sortEvents()
         elif userInput == "l":
             # list events
-            listEventsInteractive(calcli.listEvents())
+            #listEventsInteractive(calcli.listEvents())
+            listUpcomingInteractive(1000)
         elif userInput == "d":
             # delete/edit events
             deleteEventsInteractive()
@@ -219,4 +231,6 @@ def main():
     calcli.main()
     menuInteractive()
     exit()
-main()
+
+if __name__ == '__main__':
+    main()

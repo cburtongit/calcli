@@ -60,13 +60,15 @@ def sortEvents():
         csvWriter.writerows(eventsSorted)
         
 
-
+# initialise a system enviroment for calCLI by rading/creating the required
+# files and then sorting them
 def main():
     # Attempt to open events file, create one if there isn't already
     try:
+        # open a file as read-only
         open(events, "r")
     except FileNotFoundError:
-        # create the file, input the headers and then start a new line
+        # create the file if not already present
         with open(events, "a") as eventsFile:
             eventsFile.close()
     try:
