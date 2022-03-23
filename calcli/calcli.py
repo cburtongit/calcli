@@ -6,6 +6,7 @@ from datetime import date, datetime
 
 
 events = os.path.join(sys.path[0], "events.csv")
+conf = os.path.join(sys.path[0], "calcli.conf")
 
 
 # Create an event by writing details to the events.csv file
@@ -77,3 +78,23 @@ def main():
         print(e)
         print("Please delete events.csv or repair to continue")
         exit(1)
+    try:
+        # open a file as read-only
+        open(conf, "r")
+    except FileNotFoundError:
+        # create the file if not already present
+        with open(conf, "a") as confFile:
+            print("Please select a date format:\n[1]    DD-MM-YYYY (UK)\n[2]    MM-DD-YYYY (US)")
+            datefmt = input("> ")
+            if datefmt == "1":
+                confFile.write("datefmt 1")
+                confFile.write("\n")
+                confFile.close()
+            elif datefmt == "2":
+                confFile.write("datefmt 2")
+                confFile.write("\n")
+                confFile.close()
+            else:
+                print("Error, invalid date format specified. Exiting...")
+                exit(1)
+                confFile.close()

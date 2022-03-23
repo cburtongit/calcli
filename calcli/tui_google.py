@@ -17,8 +17,38 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 creds_file = os.path.join(sys.path[0], "token.json")
 
 
-def g_createEventInteractive():
-    pass
+def g_createEventInteractive(service):
+    title = ""
+
+    event = {
+        'summary': title,
+        #'location': '800 Howard St., San Francisco, CA 94103',
+        'description': 'event_description',
+        'start': {
+            'dateTime': '2022-04-28T09:00:00-07:00',
+            #'timeZone': 'America/Los_Angeles',
+        },
+        'end': {
+            'dateTime': '2022-04-28T17:00:00-07:00',
+            #'timeZone': 'America/Los_Angeles',
+        },
+        #'recurrence': [
+        #    'RRULE:FREQ=DAILY;COUNT=2'
+        #],
+        #'attendees': [
+        #    {'email': 'lpage@example.com'},
+        #    {'email': 'sbrin@example.com'},
+        #],
+        #'reminders': {
+        #    'useDefault': False,
+        #    'overrides': [
+        #    {'method': 'email', 'minutes': 24 * 60},
+        #    {'method': 'popup', 'minutes': 10},
+        #    ],
+        #},
+        }
+    event = service.events().insert(calendarId='primary', body=event).execute()
+    print('Event created: %s' % (event.get('htmlLink')))
     # NYI
 
 
@@ -64,7 +94,7 @@ def g_listUpcomingInteractive(n, service):
         # format the date from file, remove time then split by [YYYY], [MM], [DD]
         fDate = event["start"].get("dateTime")[:1-11].split("-")
         # reform the list, reversing the element order whilst adding '-' between
-        item += fDate[2] + "-" + fDate[1] + "-" + fDate[0] + "    "
+        item += fDate[2][:2] + "-" + fDate[1] + "-" + fDate[0] + "    "
         # format and store the start and end times from file
         itemStartTime = event["start"].get("dateTime")[11:16]
         itemEndTime = event["end"].get("dateTime")[11:16]

@@ -7,6 +7,7 @@ import calcli
 
 
 events = os.path.join(sys.path[0], "events.csv")
+conf = os.path.join(sys.path[0], "calcli.conf")
 help_text = """Availible Commands:
 --> c       > Check your calendar
 --> n       > Create a new event
@@ -14,6 +15,7 @@ help_text = """Availible Commands:
 --> d       > Delete events
 \n--> exit    > Close the program
 --> help    > Show this dialog"""
+dateformat = ""
 
 
 # TUI for creating an event
@@ -22,13 +24,22 @@ def createEventInteractive():
     # Date
     done = 0
     while done == 0:
-        userDate = input("Event Date (e.g. '01 06 2022' for the 1st of June, 2022): \n")
-        try:
-            uDate = str(datetime.strptime(userDate, "%d %m %Y"))[:1-10]
-            uDate = uDate.replace("-", "")
-            done = 1
-        except ValueError:
-            print("Bad formatting, Please retry.\n")
+        if dateformat == "1":
+            userDate = input("Event Date (e.g. '01 06 2022' for the 1st of June, 2022): \n")
+            try:
+                uDate = str(datetime.strptime(userDate, "%d %m %Y"))[:1-10]
+                uDate = uDate.replace("-", "")
+                done = 1
+            except ValueError:
+                print("Bad formatting, Please retry.\n")
+        elif dateformat == "2":
+            userDate = input("Event Date (e.g. '06 01 2022' for the 1st of June, 2022): \n")
+            try:
+                uDate = str(datetime.strptime(userDate, "%m %d %Y"))[:1-10]
+                uDate = uDate.replace("-", "")
+                done = 1
+            except ValueError:
+                print("Bad formatting, Please retry.\n")
     # Start Time
     done = 0
     while done == 0:
@@ -87,7 +98,10 @@ def listEventsInteractive(eventList):
             item = str(eventCounter) + "        "
         else:
             item = str(eventCounter) + "       "
-        fDate = str(datetime.strptime(event[0], "%Y%m%d"))[:1-10]
+        if dateformat == "1":
+            fDate = str(datetime.strptime(event[0], "%Y%m%d"))[:1-10]
+        elif dateformat == "2":
+            fDate = str(datetime.strptime(event[0], "%Y%d%m"))[:1-10]
         item += "" + fDate + "    "
         itemStartTime = event[1][:2] + ":" + event[1][2:]
         itemEndTime = event[2][:2] + ":" + event[2][2:] 
@@ -115,7 +129,13 @@ def listUpcomingInteractive(n):
             item = str(eventCounter) + "      "
         # build a string of the date, start time, end time and description
         # format the date from file, remove time then split by [YYYY], [MM], [DD]
-        fDate = str(datetime.strptime(event[0], "%Y%m%d"))[:1-10].split("-")
+        fDate = ""
+        if dateformat == "1":
+            fDate = str(datetime.strptime(event[0], "%Y%m%d"))[:1-10].split("-")
+        elif dateformat == "2":
+            fDate = str(datetime.strptime(event[0], "%Y%d%m"))[:1-10].split("-")
+        else:
+            fDate = str(datetime.strptime(event[0], "%Y%m%d"))[:1-10].split("-")
         # reform the list, reversing the element order whilst adding '-' between
         item += fDate[2] + "-" + fDate[1] + "-" + fDate[0] + "    "
         # format and store the start and end times from file
@@ -162,21 +182,38 @@ def drawCalInteractive():
     clear()
     drawCal(date.today())
     done = 0
-    while done == 0:
-        userDate = input("For a specific date please enter in the format 'DD MM YYYY'\nor press ENTER to return to menu.\n")
-        if userDate == "cancel" or userDate == "":
-            done = 1
-            break
-        try:
-            userDate = userDate.split(" ")
-            userYear = int(userDate[2])
-            userMonth = int(userDate[1])
-            print(calendar.month(int(userYear), int(userMonth)))
-            done = 1
-        except Exception as e:
-            print("Unrecognised format, please retry.\n")
-            if input("Try again? (y/n):  ") != "y":
+    if dateformat == "1":
+        while done == 0:
+            userDate = input("For a specific date please enter in the format 'DD MM YYYY'\nor press ENTER to return to menu.\n")
+            if userDate == "cancel" or userDate == "":
                 done = 1
+                break
+            try:
+                userDate = userDate.split(" ")
+                userYear = int(userDate[2])
+                userMonth = int(userDate[1])
+                print(calendar.month(int(userYear), int(userMonth)))
+                done = 1
+            except Exception as e:
+                print("Unrecognised format, please retry.\n")
+                if input("Try again? (y/n):  ") != "y":
+                    done = 1
+    elif dateformat == "2":
+        while done == 0:
+            userDate = input("For a specific date please enter in the format 'MM DD YYYY'\nor press ENTER to return to menu.\n")
+            if userDate == "cancel" or userDate == "":
+                done = 1
+                break
+            try:
+                userDate = userDate.split(" ")
+                userYear = int(userDate[2])
+                userMonth = int(userDate[0])
+                print(calendar.month(int(userYear), int(userMonth)))
+                done = 1
+            except Exception as e:
+                print("Unrecognised format, please retry.\n")
+                if input("Try again? (y/n):  ") != "y":
+                    done = 1
 
 
 # help menu for interactive mode
@@ -229,6 +266,15 @@ def menuInteractive():
 
 def main():
     calcli.main()
+    try:
+        with open(conf, "r") as confFile:
+            for line in confFile:
+                if line[:7] == "datefmt":
+                    dateformat = line.split(" ")
+                    dateformat = dateformat[1]
+    except Exception as e:
+        print(e)
+        exit(1)
     menuInteractive()
     exit()
 

@@ -44,12 +44,12 @@ def main():
         #'location': '800 Howard St., San Francisco, CA 94103',
         'description': 'event_description',
         'start': {
-            'dateTime': '2023-05-28T09:00:00-07:00',
-            #'timeZone': 'America/Los_Angeles',
+            'dateTime': '2022-04-28T09:00:00-07:00',
+            'timeZone': 'Europe/London',
         },
         'end': {
-            'dateTime': '2023-05-28T17:00:00-07:00',
-            #'timeZone': 'America/Los_Angeles',
+            'dateTime': '2022-04-28T17:00:00-07:00',
+            'timeZone': 'Europe/London',
         },
         #'recurrence': [
         #    'RRULE:FREQ=DAILY;COUNT=2'
