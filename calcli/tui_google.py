@@ -20,12 +20,11 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 token_file = os.path.join(sys.path[0], "token.json")
 creds_file = os.path.join(sys.path[0], "credentials.json")
 conf = os.path.join(sys.path[0], "calcli.conf")
-dateformat = ""
 tz = get_localzone()
 
 
 def g_createEventInteractive(service):
-    title = ""
+    title = "calCLI_TEST_EVENT"
     print(tz)
     event = {
         'summary': title,
@@ -33,11 +32,11 @@ def g_createEventInteractive(service):
         'description': '',
         'start': {
             'dateTime': '2022-04-28T09:00:00-07:00',
-            'timeZone': tz,
+            #'timeZone': str(tz),
         },
         'end': {
             'dateTime': '2022-04-28T17:00:00-07:00',
-            'timeZone': tz,
+            #'timeZone': tz,
         },
         #'recurrence': [
         #    'RRULE:FREQ=DAILY;COUNT=2'
@@ -105,7 +104,7 @@ def g_listUpcomingInteractive(n, service):
         itemStartTime = event["start"].get("dateTime")[11:16]
         itemEndTime = event["end"].get("dateTime")[11:16]
         # add formatted times and description
-        item += "(" + itemStartTime + " - " + itemEndTime + ")    " + event["summary"]
+        item += "(" + itemStartTime + " - " + itemEndTime + ")    " + event['summary']
         print(item)
         eventCounter += 1
         if eventCounter > n:
@@ -167,15 +166,6 @@ def main():
     # throw an error if there are connection issues to API
     except HttpError as error:
         print('An error occurred: %s' % error)
-    try:
-        with open(conf, "r") as confFile:
-            for line in confFile:
-                if line[:7] == "datefmt":
-                    dateformat = line.split(" ")
-                    dateformat = dateformat[1]
-    except Exception as e:
-        print(e)
-        exit(1)
     g_menuInteractive(service)
 
 
