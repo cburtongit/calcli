@@ -26,20 +26,56 @@ stz = str(tz)
 
 
 def g_createEventInteractive(service):
-    userDate = input("Date: ")
-    userStartTime = input("Start Time: ")
-    userEndTime = input("End Time: ")
-    userTitle = input("Event Description: ")
+    # get date
+    done = 0
+    while done == 0:
+        userDate = input("Date (YYYY-MM-DD): ")
+        try:
+            datetime.datetime.strptime(userDate, "%Y %m %d")
+            done = 1
+        except Exception as e:
+            print("Bad formatting, Please retry.\n")
     
+    # get start time
+    done = 0
+    while done == 0:
+        userStartTime = input("Start Time (HH:MM): ")
+        try:
+            datetime.datetime.strptime(userStartTime, "%H:%M")
+            done = 1
+        except Exception as e:
+            print("Bad formatting, Please retry.\n")
+    
+    # get end time
+    done = 0
+    while done == 0:
+        userEndTime = input("End Time (HH:MM): ")
+        try:
+            datetime.datetime.strptime(userEndTime, "%H:%M")
+            done = 1
+        except Exception as e:
+            print("Bad formatting, Please retry.\n")
+    
+    # get description
+    done = 0
+    while done == 0:
+        userTitle = input("Event Description: ")
+        if len(userTitle) < 1:
+            print("Bad formatting, Please retry.\n")
+        else:
+            done = 1
+    
+    # format date
     uSdt = userDate + " " + userStartTime
     uEdt = userDate + " " + userEndTime
-    sfDate = datetime.datetime.strptime(uSdt, "%Y %m %d %H:%M")
-    sfDate.replace(tzinfo=tz)
+    sfDate = datetime.datetime.strptime(uSdt, "%Y %m %d %H:%M") # create date time object
+    sfDate.replace(tzinfo=tz) # localise
     efDate = datetime.datetime.strptime(uEdt, "%Y %m %d %H:%M")
     efDate.replace(tzinfo=tz)
-    startUTC = sfDate.astimezone(pytz.utc)
+    startUTC = sfDate.astimezone(pytz.utc) # convert to UTC
     endUTC = efDate.astimezone(pytz.utc)
     
+    # create event
     event = {
         'summary': userTitle,
         #'location': '800 Howard St., San Francisco, CA 94103',
@@ -51,23 +87,8 @@ def g_createEventInteractive(service):
         'end': {
             'dateTime': endUTC.isoformat(),
             'timeZone': stz,
-        },
-        #'recurrence': [
-        #    'RRULE:FREQ=DAILY;COUNT=2'
-        #],
-        #'attendees': [
-        #    {'email': 'lpage@example.com'},
-        #    {'email': 'sbrin@example.com'},
-        #],
-        #'reminders': {
-        #    'useDefault': False,
-        #    'overrides': [
-        #    {'method': 'email', 'minutes': 24 * 60},
-        #    {'method': 'popup', 'minutes': 10},
-        #    ],
-        #},
         }
-    event = service.events().insert(calendarId='primary', body=event).execute()
+    event = service.events().insert(calendarId='primary', body=event).execute() # add to calendar
     print('Event created: %s' % (event.get('htmlLink')))
     # NYI
 
