@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-import datetime, sys
+import datetime, sys, os
 import os.path
 
 from google.auth.transport.requests import Request
@@ -26,72 +26,7 @@ tz = get_localzone()
 
 def g_createEventInteractive(service):
     title = ""
-    done = 0
-    print(dateformat)
-    while done == 0:
-        print(dateformat)
-        if dateformat == "1":
-            userDate = input("Event Date (e.g. '01 06 2022' for the 1st of June, 2022): \n")
-            try:
-                uDate = str(datetime.strptime(userDate, "%d %m %Y"))[:1-10]
-                uDate = uDate.replace("-", "")
-                done = 1
-            except ValueError:
-                print("Bad formatting, Please retry.\n")
-        else:
-            userDate = input("Event Date (e.g. '06 01 2022' for the 1st of June, 2022): \n")
-            try:
-                uDate = str(datetime.strptime(userDate, "%m %d %Y"))[:1-10]
-                uDate = uDate.replace("-", "")
-                done = 1
-            except ValueError:
-                print("Bad formatting, Please retry.\n")
-    # Start Time
-    done = 0
-    while done == 0:
-        userStartTime = input("Start time (e.g. '09:30' for 10:30AM or '20:45' for 8:45PM): ")
-        try:
-            uST = userStartTime.split(":")
-            if len(uST[0]) < 2:
-                uST[0] = "0" + uST[0]
-            int(uST[0]) < 25 == True
-            int(uST[1]) < 61 == True
-            done = 1
-        except Exception as e:
-            print(e)
-            print("Bad formatting, Please retry.\n")
-    # End Time
-    done = 0
-    while done == 0:
-        userEndTime = input("End time (e.g. '10:30' for 10:30AM or '20:45' for 8:45PM): ")
-        try:
-            uET = userEndTime.split(":")
-            if len(uET[0]) < 2:
-                uET[0] = "0" + uET[0]
-            if int(uET[0]) >= int(uST[0]):
-                pass
-                if int(uET[1]) >= int(uST[1]):
-                    pass
-                else:
-                    raise Exception("Warning: event ending before start time!")
-            else:
-                raise Exception("Warning: event ending before start time!")
-            int(uST[0]) < 25 == True
-            int(uST[1]) < 61 == True
-            done = 1
-        except Exception as e:
-            print(e)
-            print("Bad formatting, Please retry.\n")
-    # Description
-    userDesc = input("Event description: ")
-    try:
-        start = "" + str(uST[0]) + str(uST[1])
-        end = "" + str(uET[0]) + str(uET[1])
-        calcli.createEvent(uDate, start, end, userDesc)
-        print("Event created.\n")
-    except Exception as e:
-        print("Error:\n" + str(e) + "\n")
-    
+    print(tz)
     event = {
         'summary': title,
         #'location': '800 Howard St., San Francisco, CA 94103',
