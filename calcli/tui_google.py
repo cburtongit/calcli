@@ -1,7 +1,8 @@
 from __future__ import print_function
 
-import datetime, sys, os
+import sys, os, time
 import os.path
+import datetime
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -21,22 +22,35 @@ token_file = os.path.join(sys.path[0], "token.json")
 creds_file = os.path.join(sys.path[0], "credentials.json")
 conf = os.path.join(sys.path[0], "calcli.conf")
 tz = get_localzone()
+stz = str(tz)
 
 
 def g_createEventInteractive(service):
-    title = "calCLI_TEST_EVENT"
-    print(tz)
+    userDate = input("Date: ")
+    userStartTime = input("Start Time: ")
+    userEndTime = input("End Time: ")
+    userTitle = input("Event Description: ")
+    
+    uSdt = userDate + " " + userStartTime
+    uEdt = userDate + " " + userEndTime
+    sfDate = datetime.datetime.strptime(uSdt, "%Y %m %d %H:%M")
+    sfDate.replace(tzinfo=tz)
+    efDate = datetime.datetime.strptime(uEdt, "%Y %m %d %H:%M")
+    efDate.replace(tzinfo=tz)
+    startUTC = sfDate.astimezone(pytz.utc)
+    endUTC = efDate.astimezone(pytz.utc)
+    
     event = {
-        'summary': title,
+        'summary': userTitle,
         #'location': '800 Howard St., San Francisco, CA 94103',
         'description': '',
         'start': {
-            'dateTime': '2022-04-28T09:00:00-07:00',
-            #'timeZone': str(tz),
+            'dateTime': startUTC.isoformat(),
+            'timeZone': stz,
         },
         'end': {
-            'dateTime': '2022-04-28T17:00:00-07:00',
-            #'timeZone': tz,
+            'dateTime': endUTC.isoformat(),
+            'timeZone': stz,
         },
         #'recurrence': [
         #    'RRULE:FREQ=DAILY;COUNT=2'
