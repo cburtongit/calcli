@@ -15,6 +15,11 @@ help_text = """Availible Commands:
 --> d       > Delete events
 \n--> exit    > Close the program
 --> help    > Show this dialog"""
+welcome_text = """              __________    ____
+  _________ _/ / ____/ /   /  _/
+ / ___/ __ `/ / /   / /    / /
+/ /__/ /_/ / / /___/ /____/ /
+\___/\__,_/_/\____/_____/___/\n"""
 dateformat = ""
 
 
@@ -222,6 +227,13 @@ def clear():
     else:
         # *nix
         system("clear")
+
+
+def rewriteConfig(eList):
+    with open(events, "w", newline="") as eventsFile:
+    # Write the sorted list back to the file
+        csvWriter = csv.writer(eventsFile, delimiter=",")
+        csvWriter.writerows(eList)
 
 # interactive menu for when the user wants to do multiple things
 def menuInteractive():
