@@ -9,28 +9,100 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+import pytz
+from tzlocal import get_localzone
+
 import tui
 
 # Permissions for using the calendar API
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 # User credentials file
-creds_file = os.path.join(sys.path[0], "token.json")
+token_file = os.path.join(sys.path[0], "token.json")
+creds_file = os.path.join(sys.path[0], "credentials.json")
+conf = os.path.join(sys.path[0], "calcli.conf")
+dateformat = ""
+tz = get_localzone()
 
 
 def g_createEventInteractive(service):
     title = ""
-
+    done = 0
+    print(dateformat)
+    while done == 0:
+        print(dateformat)
+        if dateformat == "1":
+            userDate = input("Event Date (e.g. '01 06 2022' for the 1st of June, 2022): \n")
+            try:
+                uDate = str(datetime.strptime(userDate, "%d %m %Y"))[:1-10]
+                uDate = uDate.replace("-", "")
+                done = 1
+            except ValueError:
+                print("Bad formatting, Please retry.\n")
+        else:
+            userDate = input("Event Date (e.g. '06 01 2022' for the 1st of June, 2022): \n")
+            try:
+                uDate = str(datetime.strptime(userDate, "%m %d %Y"))[:1-10]
+                uDate = uDate.replace("-", "")
+                done = 1
+            except ValueError:
+                print("Bad formatting, Please retry.\n")
+    # Start Time
+    done = 0
+    while done == 0:
+        userStartTime = input("Start time (e.g. '09:30' for 10:30AM or '20:45' for 8:45PM): ")
+        try:
+            uST = userStartTime.split(":")
+            if len(uST[0]) < 2:
+                uST[0] = "0" + uST[0]
+            int(uST[0]) < 25 == True
+            int(uST[1]) < 61 == True
+            done = 1
+        except Exception as e:
+            print(e)
+            print("Bad formatting, Please retry.\n")
+    # End Time
+    done = 0
+    while done == 0:
+        userEndTime = input("End time (e.g. '10:30' for 10:30AM or '20:45' for 8:45PM): ")
+        try:
+            uET = userEndTime.split(":")
+            if len(uET[0]) < 2:
+                uET[0] = "0" + uET[0]
+            if int(uET[0]) >= int(uST[0]):
+                pass
+                if int(uET[1]) >= int(uST[1]):
+                    pass
+                else:
+                    raise Exception("Warning: event ending before start time!")
+            else:
+                raise Exception("Warning: event ending before start time!")
+            int(uST[0]) < 25 == True
+            int(uST[1]) < 61 == True
+            done = 1
+        except Exception as e:
+            print(e)
+            print("Bad formatting, Please retry.\n")
+    # Description
+    userDesc = input("Event description: ")
+    try:
+        start = "" + str(uST[0]) + str(uST[1])
+        end = "" + str(uET[0]) + str(uET[1])
+        calcli.createEvent(uDate, start, end, userDesc)
+        print("Event created.\n")
+    except Exception as e:
+        print("Error:\n" + str(e) + "\n")
+    
     event = {
         'summary': title,
         #'location': '800 Howard St., San Francisco, CA 94103',
-        'description': 'event_description',
+        'description': '',
         'start': {
             'dateTime': '2022-04-28T09:00:00-07:00',
-            #'timeZone': 'America/Los_Angeles',
+            'timeZone': tz,
         },
         'end': {
             'dateTime': '2022-04-28T17:00:00-07:00',
-            #'timeZone': 'America/Los_Angeles',
+            'timeZone': tz,
         },
         #'recurrence': [
         #    'RRULE:FREQ=DAILY;COUNT=2'
@@ -77,7 +149,6 @@ def g_listUpcomingInteractive(n, service):
         singleEvents = True,
         orderBy = "startTime").execute()
     events = events_result.get("items", [])
-
     if not events:
         print('No Google Calendar Events.')
         return   
@@ -107,12 +178,11 @@ def g_listUpcomingInteractive(n, service):
 
 
 def g_menuInteractive(service):
-    # tui.clear()
-    # g_listEvents(20, service)
     tui.clear()
     tui.calcli.sortEvents()
     g_listUpcomingInteractive(3, service)
     print("\n\n" + tui.help_text)
+    
     # user input menu
     done = 0
     while done == 0:
@@ -125,7 +195,7 @@ def g_menuInteractive(service):
             help()
         elif userInput == "n":
             # new event
-            tui.createEventInteractive()
+            g_createEventInteractive(service)
             tui.calcli.sortEvents()
         elif userInput == "l":
             # list events
@@ -143,17 +213,17 @@ def g_menuInteractive(service):
 def main():
     creds = None
     # load credentials from a file if already existing
-    if os.path.exists(creds_file):
-        creds = Credentials.from_authorized_user_file(creds_file, SCOPES)
+    if os.path.exists(token_file):
+        creds = Credentials.from_authorized_user_file(token_file, SCOPES)
     # If there are no (valid) credentials available, prompt for user login.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(creds_file, SCOPES)
             creds = flow.run_local_server(port = 0)
         # Save the credentials for the next run
-        with open(creds_file, "w") as token:
+        with open(token_file, "w") as token:
             token.write(creds.to_json())
     
     # attempt to create a calendar instance, abort if there is an API error
@@ -162,7 +232,15 @@ def main():
     # throw an error if there are connection issues to API
     except HttpError as error:
         print('An error occurred: %s' % error)
-
+    try:
+        with open(conf, "r") as confFile:
+            for line in confFile:
+                if line[:7] == "datefmt":
+                    dateformat = line.split(" ")
+                    dateformat = dateformat[1]
+    except Exception as e:
+        print(e)
+        exit(1)
     g_menuInteractive(service)
 
 
