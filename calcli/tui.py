@@ -12,14 +12,19 @@ help_text = """Availible Commands:
 --> n       > Create a new event
 --> l       > List all events
 --> d       > Delete events
-\n--> exit    > Close the program
---> help    > Show this dialog"""
+\n--> help    > Show this dialog
+--> gpl     > Show Licence information
+--> quit    > Close the program"""
+
+lic_text = """This software is licenced under
+the GNU GPL v3 Licence, more info can be found here: 
+https://www.gnu.org/licenses/gpl-3.0.en.html"""
+
 welcome_text = """              __________    ____
   _________ _/ / ____/ /   /  _/
  / ___/ __ `/ / /   / /    / /
 / /__/ /_/ / / /___/ /____/ /
 \___/\__,_/_/\____/_____/___/\n"""
-dateformat = ""
 
 
 # TUI for creating an event
@@ -199,6 +204,12 @@ def help():
     print(help_text)
 
 
+# prints licence
+def licence():
+    clear()
+    print(lic_text)
+
+
 # Clears the terminal using system calls based on what OS  is used
 def clear():
     if name == "nt":
@@ -222,6 +233,7 @@ def menuInteractive():
         elif userInput == "l": listUpcomingInteractive(1000) # list events
         elif userInput == "d": deleteEventsInteractive() # delete/edit events
         elif userInput == "c": drawCalInteractive() # check calendar
+        elif userInput == "gpl": licence() # print licence
         else: print("Unrecognised command, type 'help' for a list of commands.")
 
 

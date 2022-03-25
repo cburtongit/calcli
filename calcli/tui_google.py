@@ -22,8 +22,13 @@ help_text = """Availible Commands:
 --> l       > List all events
 --> d       > Delete events
 --> s       > Sync online/offline calendars
-\n--> exit    > Close the program
---> help    > Show this dialog"""
+\n--> help    > Show this dialog
+--> gpl     > Show Licence information
+--> quit    > Close the program"""
+
+lic_text = """This software is licenced under
+the GNU GPL v3 Licence, more info can be found here: 
+https://www.gnu.org/licenses/gpl-3.0.en.html"""
 
 # Permissions for using the calendar API
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -60,9 +65,9 @@ def g_createEvent(service, userDate, userStartTime, userEndTime, userTitle):
     }
     event = service.events().insert(calendarId='primary', body=event).execute() # add to calendar
     print('Event created: %s' % (event.get('htmlLink')))
-    # NYI
 
 
+# menu for creating a new online/offline event
 def g_createEventInteractive(service):
     # get date
     done = 0
@@ -107,36 +112,36 @@ def g_deleteEvent(service, eventid):
     service.events().delete(calendarId='primary', eventId=eventid).execute()
 
 
-def g_deleteEventInteractive(service):
-    tui.listEventsInteractive(calcli.listEvents())
-    eventList = calcli.listEvents()
-    done = 0
-    while done == 0:
-        pass
-
-
-
-def deleteEventsInteractive():
-    tui.listEventsInteractive(calcli.listEvents())
-    eventList = calcli.listEvents()
+# menu for deleting online/offline events
+def deleteEventsInteractive(service):
+    tui.listEventsInteractive(tui.calcli.listEvents()) # display ALL events
+    eventList = tui.calcli.listEvents() # get eventlist
+    events_result = service.events().list(calendarId = "primary", singleEvents = True, orderBy = "startTime").execute()
+    g_events = events_result.get("items", []) # get google calendar events
+    g_targets = []
     done = 0
     while done == 0:
         userTargets = input("Select event number(s) to delete (e.g. '1 3 9 14 28'):  ")
-        if userTargets == "": done = 1; break
+        if userTargets == "": done = 1; break # skip if empty list
         try:
             userTargets = list(map(int, userTargets.split(" ")))
             for index in sorted(userTargets, reverse=True):
-                del eventList[index - 1]
+                g_targets.append(eventList[index-1]) # remember event for google deletion
+                del eventList[index - 1]       
+            for t in g_targets:
+                for g in g_events:
+                    if t[3] == g['summary']: # match date +
+                        if t[0] == (g["start"].get("dateTime")[:10]).replace("-", ""): # title
+                            g_deleteEvent(service, g['id']) # delete the event
+                            print("Event deleted.") # confirm
+            tui.calcli.rewriteConfig(eventList) # write to offline
             done = 1
-            listEventsInteractive(eventList)
-            calcli.rewriteConfig(eventList)
         except Exception as e:
             print("Bad input, please retry.")
 
 
 def g_sync(service):
     total_events = tui.calcli.listEvents() # get local event list
-    #for e in total_events: print(e)
     google_events = [] # get google event list
     g_serv = service.events().list(calendarId = "primary", singleEvents = True, orderBy = "startTime").execute()
     g_events = g_serv.get("items", [])   
@@ -156,13 +161,11 @@ def g_sync(service):
     total_events.extend(google_events) # merge lists
     events = tui.calcli.sortEvents(total_events)
     tui.calcli.rewriteConfig(events)
-
+    
 
 # List all upcoming events from Offline calendar and then Google Events
 def g_listUpcomingInteractive(n, service):
     tui.clear()
-    tui.listUpcomingInteractive(n)
-    print("(Online):")
     now = datetime.datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
     events_result = service.events().list(calendarId = "primary", 
         timeMin = now,
@@ -189,7 +192,7 @@ def g_listUpcomingInteractive(n, service):
         item += str(eStart)[:10] + "    "
         item += "(" + str(eStart)[11:-9] + " - " + str(eEnd)[11:-9] + ")"
         item += "    " + event['summary']
-        print(item)
+        print(item) # + event['id'])
         eventCounter += 1
         if eventCounter > n:
             break
@@ -199,6 +202,12 @@ def g_listUpcomingInteractive(n, service):
 def help():
     tui.clear()
     print(help_text)
+
+
+# prints licence
+def licence():
+    tui.clear()
+    print(lic_text)
 
 
 # main menu
@@ -212,9 +221,10 @@ def g_menuInteractive(service):
         elif userInput == "help": help() # print help dialog
         elif userInput == "n": g_createEventInteractive(service); g_sync(service) # new event
         elif userInput == "l": tui.listUpcomingInteractive(1000) # list events
-        elif userInput == "d": tui.deleteEventsInteractive() # delete/edit events
+        elif userInput == "d": deleteEventsInteractive(service) # delete/edit events
         elif userInput == "c": tui.drawCalInteractive() # check calendar
-        elif userInput == "s": g_sync(service) # sync events between offline and online
+        elif userInput == "s": g_sync(service); print("Syncing complete.") # sync events between offline and online
+        elif userInput == "gpl": licence() # print licence
         else: print("Unrecognised command, type 'help' for a list of commands.")
 
 
