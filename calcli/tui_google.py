@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import sys, os, time, itertools
 from threading import local
 import os.path
