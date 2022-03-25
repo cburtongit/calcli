@@ -1,12 +1,11 @@
 # Author C.J. Burtonprint("Not yet implemented")
-import csv, calendar, os
+import csv, calendar, os, itertools
 from operator import delitem
 from os import path, system, name, sys
 from datetime import date, datetime
 
 
 events = os.path.join(sys.path[0], "events.csv")
-conf = os.path.join(sys.path[0], "calcli.conf")
 
 
 # Create an event by writing details to the events.csv file
@@ -17,12 +16,12 @@ def createEvent(date, tstart, tend, title):
         eventsFile.close()
 
 
-# writes a new eventList 
-def overwriteEventFile(eventList):
-    with open(events, "w") as eventsFile:
-        writer = csv.writer(eventsFile)
-        writer.writerows(eventList)
-        eventsFile.close()
+# mass rewrites config with new event list
+def rewriteConfig(eList):
+    with open(events, "w", newline="") as eventsFile:
+    # Write the sorted list back to the file
+        csvWriter = csv.writer(eventsFile, delimiter=",")
+        csvWriter.writerows(eList)
 
 
 # list upcoming events for a specific time interval
@@ -50,7 +49,7 @@ def getNextEvents():
 
 
 # sorts the csv file by reading in the current file, sorting by date, then re-writing new list
-def sortEvents():
+def sortEventsFile():
     # Note to self, r+ is read/write with file pointer at START of file, use a for appending
     with open(events, "r", newline="") as eventsFile:
         csvReader = csv.reader(eventsFile, delimiter=",")
@@ -59,6 +58,13 @@ def sortEvents():
     # Write the sorted list back to the file
         csvWriter = csv.writer(eventsFile, delimiter=",")
         csvWriter.writerows(eventsSorted)
+
+
+# sort a random list of events
+def sortEvents(events):
+    events.sort()
+    eventsSorted = list(events for events,_ in itertools.groupby(events))
+    return eventsSorted
         
 
 # initialise a system enviroment for calCLI by rading/creating the required
@@ -73,28 +79,8 @@ def main():
         with open(events, "a") as eventsFile:
             eventsFile.close()
     try:
-        sortEvents()
+        sortEventsFile()
     except Exception as e:
         print(e)
         print("Please delete events.csv or repair to continue")
         exit(1)
-    try:
-        # open a file as read-only
-        open(conf, "r")
-    except FileNotFoundError:
-        # create the file if not already present
-        with open(conf, "a") as confFile:
-            print("Please select a date format:\n[1]    DD-MM-YYYY (UK)\n[2]    MM-DD-YYYY (US)")
-            datefmt = input("> ")
-            if datefmt == "1":
-                confFile.write("datefmt 1")
-                confFile.write("\n")
-                confFile.close()
-            elif datefmt == "2":
-                confFile.write("datefmt 2")
-                confFile.write("\n")
-                confFile.close()
-            else:
-                print("Error, invalid date format specified. Exiting...")
-                exit(1)
-                confFile.close()

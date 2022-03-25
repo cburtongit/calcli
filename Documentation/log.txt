@@ -23,3 +23,4 @@
             --> had issues with checking my time was correct, had to check that the end hour was the same or more
                 if it was the same, I had to THEN check wether or not the minute was higher (fixed with
                 a string split and targeting the middle index for month)
+[24/03/2022] Issues with g_sync writing google events twice

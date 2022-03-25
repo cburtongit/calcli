@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-import sys, os, time
+import sys, os, time, itertools
 from threading import local
 import os.path
 import datetime
@@ -30,15 +30,9 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 # User credentials file
 token_file = os.path.join(sys.path[0], "token.json")
 creds_file = os.path.join(sys.path[0], "credentials.json")
-conf = os.path.join(sys.path[0], "calcli.conf")
 tz = get_localzone()
 stz = str(tz)
 
-
-def g_sortEvents(events):
-    eventsSorted = sorted(events, key=lambda f: f[0], reverse=False)
-    return eventsSorted
-    #csvWriter.writerows(eventsSorted)
 
 
 # create event on google calendar
@@ -108,10 +102,36 @@ def g_createEventInteractive(service):
     g_createEvent(service, userDate, userStartTime, userEndTime, userTitle)
 
 
-def g_deleteEventInteractive(service):
-    eventid = ""
+# deletes a google calendar event
+def g_deleteEvent(service, eventid):
     service.events().delete(calendarId='primary', eventId=eventid).execute()
-    # NYI
+
+
+def g_deleteEventInteractive(service):
+    tui.listEventsInteractive(calcli.listEvents())
+    eventList = calcli.listEvents()
+    done = 0
+    while done == 0:
+        pass
+
+
+
+def deleteEventsInteractive():
+    tui.listEventsInteractive(calcli.listEvents())
+    eventList = calcli.listEvents()
+    done = 0
+    while done == 0:
+        userTargets = input("Select event number(s) to delete (e.g. '1 3 9 14 28'):  ")
+        if userTargets == "": done = 1; break
+        try:
+            userTargets = list(map(int, userTargets.split(" ")))
+            for index in sorted(userTargets, reverse=True):
+                del eventList[index - 1]
+            done = 1
+            listEventsInteractive(eventList)
+            calcli.rewriteConfig(eventList)
+        except Exception as e:
+            print("Bad input, please retry.")
 
 
 def g_sync(service):
@@ -134,11 +154,8 @@ def g_sync(service):
         new_event = [eventDate, eventStart, eventEnd, eventDesc]
         google_events.append(new_event)
     total_events.extend(google_events) # merge lists
-    events = g_sortEvents(total_events)
-    for e in events: print(e)
-    tui.rewriteConfig(events)
-
-
+    events = tui.calcli.sortEvents(total_events)
+    tui.calcli.rewriteConfig(events)
 
 
 # List all upcoming events from Offline calendar and then Google Events
@@ -184,17 +201,17 @@ def help():
     print(help_text)
 
 
+# main menu
 def g_menuInteractive(service):
     tui.clear()
-    #tui.calcli.sortEvents()
+    g_sync(service) # sync up local and google calendars
     print(tui.welcome_text + "\n" + help_text + "\n")
-    # user input menu
-    while 1:
+    while 1: # user input
         userInput = input(">  ")
-        if userInput == "exit" or userInput == "q" or userInput == "quit": exit()
+        if userInput == "exit" or userInput == "q" or userInput == "quit": tui.clear(); exit()
         elif userInput == "help": help() # print help dialog
-        elif userInput == "n": g_createEventInteractive(service) # new event
-        elif userInput == "l": g_listUpcomingInteractive(1000, service) # list events
+        elif userInput == "n": g_createEventInteractive(service); g_sync(service) # new event
+        elif userInput == "l": tui.listUpcomingInteractive(1000) # list events
         elif userInput == "d": tui.deleteEventsInteractive() # delete/edit events
         elif userInput == "c": tui.drawCalInteractive() # check calendar
         elif userInput == "s": g_sync(service) # sync events between offline and online
@@ -204,27 +221,21 @@ def g_menuInteractive(service):
 # initialise a calendar and then call menu function
 def main():
     creds = None
-    # load credentials from a file if already existing
-    if os.path.exists(token_file):
+    if os.path.exists(token_file): # load credentials from a file if already existing
         creds = Credentials.from_authorized_user_file(token_file, SCOPES)
-    # If there are no (valid) credentials available, prompt for user login.
-    if not creds or not creds.valid:
+    if not creds or not creds.valid: # If there are no (valid) credentials available, prompt for user login.
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(creds_file, SCOPES)
             creds = flow.run_local_server(port = 0)
-        # Save the credentials for the next run
-        with open(token_file, "w") as token:
+        with open(token_file, "w") as token: # Save the credentials for the next run
             token.write(creds.to_json())
-    
-    # attempt to create a calendar instance, abort if there is an API error
-    try:
+    try: # attempt to create a calendar instance
         service = build("calendar", "v3", credentials = creds)
-    # throw an error if there are connection issues to API
-    except HttpError as error:
+    except HttpError as error: # throw an error if there are connection issues to API
         print('An error occurred: %s' % error)
-    g_menuInteractive(service)
+    g_menuInteractive(service) # load menu
 
 
 

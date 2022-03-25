@@ -7,7 +7,6 @@ import calcli
 
 
 events = os.path.join(sys.path[0], "events.csv")
-conf = os.path.join(sys.path[0], "calcli.conf")
 help_text = """Availible Commands:
 --> c       > Check your calendar
 --> n       > Create a new event
@@ -155,16 +154,14 @@ def deleteEventsInteractive():
     done = 0
     while done == 0:
         userTargets = input("Select event number(s) to delete (e.g. '1 3 9 14 28'):  ")
-        if userTargets == "":
-            done = 1
-            break
+        if userTargets == "": done = 1; break
         try:
             userTargets = list(map(int, userTargets.split(" ")))
             for index in sorted(userTargets, reverse=True):
                 del eventList[index - 1]
             done = 1
             listEventsInteractive(eventList)
-            calcli.overwriteEventFile(eventList)
+            calcli.rewriteConfig(eventList)
         except Exception as e:
             print("Bad input, please retry.")
 
@@ -182,13 +179,11 @@ def drawCalInteractive():
     drawCal(date.today())
     done = 0
     while done == 0:
-        userDate = input("For a specific date please enter in the format 'DD MM YYYY'\nor press ENTER to return to menu.\n")
-        if userDate == "cancel" or userDate == "":
-            done = 1
-            break
+        userDate = input("For a specific date please enter in the format 'YYYY MM DD'\nor press ENTER to return to menu.\n")
+        if userDate == "cancel" or userDate == "": done = 1; break
         try:
             userDate = userDate.split(" ")
-            userYear = int(userDate[2])
+            userYear = int(userDate[0])
             userMonth = int(userDate[1])
             print(calendar.month(int(userYear), int(userMonth)))
             done = 1
@@ -196,28 +191,13 @@ def drawCalInteractive():
             print("Unrecognised format, please retry.\n")
             if input("Try again? (y/n):  ") != "y":
                 done = 1
-        """
-        while done == 0:
-            userDate = input("For a specific date please enter in the format 'MM DD YYYY'\nor press ENTER to return to menu.\n")
-            if userDate == "cancel" or userDate == "":
-                done = 1
-                break
-            try:
-                userDate = userDate.split(" ")
-                userYear = int(userDate[2])
-                userMonth = int(userDate[0])
-                print(calendar.month(int(userYear), int(userMonth)))
-                done = 1
-            except Exception as e:
-                print("Unrecognised format, please retry.\n")
-                if input("Try again? (y/n):  ") != "y":
-                    done = 1
-        """
+
 
 # help menu for interactive mode
 def help():
     clear()
     print(help_text)
+
 
 # Clears the terminal using system calls based on what OS  is used
 def clear():
@@ -229,57 +209,24 @@ def clear():
         system("clear")
 
 
-def rewriteConfig(eList):
-    with open(events, "w", newline="") as eventsFile:
-    # Write the sorted list back to the file
-        csvWriter = csv.writer(eventsFile, delimiter=",")
-        csvWriter.writerows(eList)
-
 # interactive menu for when the user wants to do multiple things
 def menuInteractive():
     clear()
-    calcli.sortEvents()
-    listUpcomingInteractive(3)
-    print("\n\n" + help_text)
-    # user input menu
-    done = 0
-    while done == 0:
+    calcli.sortEventsFile()
+    print(welcome_text + "\n" + help_text + "\n")
+    while 1: # user input
         userInput = input(">  ")
-        if userInput == "exit":
-            done = 1
-            exit()
-        elif userInput == "help":
-            # print help dialog
-            help()
-        elif userInput == "n":
-            # new event
-            createEventInteractive()
-            calcli.sortEvents()
-        elif userInput == "l":
-            # list events
-            #listEventsInteractive(calcli.listEvents())
-            listUpcomingInteractive(1000)
-        elif userInput == "d":
-            # delete/edit events
-            deleteEventsInteractive()
-        elif userInput == "c":
-            # check calendar
-            drawCalInteractive()
-        else:
-            print("Unrecognised command, type 'help' for a list of commands.")
+        if userInput == "exit" or userInput == "q" or userInput == "quit": clear(); exit()
+        elif userInput == "help": help() # print help dialog
+        elif userInput == "n": createEventInteractive(); calcli.sortEventsFile() # new event
+        elif userInput == "l": listUpcomingInteractive(1000) # list events
+        elif userInput == "d": deleteEventsInteractive() # delete/edit events
+        elif userInput == "c": drawCalInteractive() # check calendar
+        else: print("Unrecognised command, type 'help' for a list of commands.")
 
 
 def main():
     calcli.main()
-    try:
-        with open(conf, "r") as confFile:
-            for line in confFile:
-                if line[:7] == "datefmt":
-                    dateformat = line.split(" ")
-                    dateformat = dateformat[1]
-    except Exception as e:
-        print(e)
-        exit(1)
     menuInteractive()
     exit()
 
