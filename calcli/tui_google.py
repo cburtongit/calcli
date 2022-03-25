@@ -218,7 +218,7 @@ def g_menuInteractive(service):
         if userInput == "exit" or userInput == "q" or userInput == "quit": tui.clear(); exit()
         elif userInput == "help": help() # print help dialog
         elif userInput == "n": g_createEventInteractive(service); g_sync(service) # new event
-        elif userInput == "l": tui.listUpcomingInteractive(1000) # list events
+        elif userInput == "l": tui.listEventsInteractive(tui.calcli.listEvents()) # list events
         elif userInput == "d": deleteEventsInteractive(service) # delete/edit events
         elif userInput == "c": tui.drawCalInteractive() # check calendar
         elif userInput == "s": g_sync(service); print("Syncing complete.") # sync events between offline and online
