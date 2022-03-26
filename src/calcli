@@ -1,0 +1,11 @@
+#!/bin/bash
+# Author C. J. Burton
+
+if [ "$1" = "-g" ];
+then
+    echo "Launching calCLI with google calendar support."
+    python3 ~/.local/share/calcli/tui_google.py
+else
+    echo "Launching calCLI in offline mode"
+    python3 ~/.local/share/calcli/tui.py
+fi

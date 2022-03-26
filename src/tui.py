@@ -1,4 +1,4 @@
-# Author C.J. Burtonprint("Not yet implemented")
+# Author C.J. Burton
 import csv, calendar, os
 from os import path, system, name, sys
 from datetime import date, datetime
@@ -33,22 +33,13 @@ def createEventInteractive():
     # Date
     done = 0
     while done == 0:
-        userDate = input("Event Date (e.g. '01 06 2022' for the 1st of June, 2022): \n")
+        userDate = input("Event Date (e.g. '2022 06 01' for the 1st of June, 2022): \n")
         try:
-            uDate = str(datetime.strptime(userDate, "%d %m %Y"))[:1-10]
+            uDate = str(datetime.strptime(userDate, "%Y %m %d"))[:1-10]
             uDate = uDate.replace("-", "")
             done = 1
         except ValueError:
             print("Bad formatting, Please retry.\n")
-        """
-        userDate = input("Event Date (e.g. '06 01 2022' for the 1st of June, 2022): \n")
-        try:
-            uDate = str(datetime.strptime(userDate, "%m %d %Y"))[:1-10]
-            uDate = uDate.replace("-", "")
-            done = 1
-        except ValueError:
-            print("Bad formatting, Please retry.\n")
-        """
     # Start Time
     done = 0
     while done == 0:
@@ -230,7 +221,7 @@ def menuInteractive():
         if userInput == "exit" or userInput == "q" or userInput == "quit": clear(); exit()
         elif userInput == "help": help() # print help dialog
         elif userInput == "n": createEventInteractive(); calcli.sortEventsFile() # new event
-        elif userInput == "l": listUpcomingInteractive(1000) # list events
+        elif userInput == "l": listEventsInteractive(calcli.listEvents()) # list events
         elif userInput == "d": deleteEventsInteractive() # delete/edit events
         elif userInput == "c": drawCalInteractive() # check calendar
         elif userInput == "gpl": licence() # print licence

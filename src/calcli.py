@@ -1,4 +1,4 @@
-# Author C.J. Burtonprint("Not yet implemented")
+# Author C.J. Burton
 import csv, calendar, os, itertools
 from operator import delitem
 from os import path, system, name, sys
@@ -44,7 +44,10 @@ def getNextEvents():
         if (i[0] <= currentDate):
             eventList.remove(i)
     # Strange bug where the first target item is not removed, this is a fix
-    del eventList[0]
+    if os.stat(events).st_size == 0:
+        return eventList
+    else:
+        del eventList[0]
     return eventList
 
 

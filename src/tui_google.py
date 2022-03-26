@@ -1,3 +1,4 @@
+# Author C. J. Burton
 import sys, os, time, itertools
 from threading import local
 import os.path
