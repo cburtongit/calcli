@@ -62,14 +62,16 @@ def createEventInteractive():
             uET = userEndTime.split(":")
             if len(uET[0]) < 2:
                 uET[0] = "0" + uET[0]
-            if int(uET[0]) >= int(uST[0]):
+            if int(uET[0]) > int(uST[0]):
                 pass
+            elif int(uET[0]) == int(uST[0]):
                 if int(uET[1]) >= int(uST[1]):
                     pass
                 else:
                     raise Exception("Warning: event ending before start time!")
             else:
-                raise Exception("Warning: event ending before start time!")
+                print("uST: " + uST[0] + " uET: " + uET[0])
+                raise Exception("Warning: Event ending before start time!")
             int(uST[0]) < 25 == True
             int(uST[1]) < 61 == True
             done = 1
