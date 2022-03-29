@@ -3,6 +3,7 @@ import sys, os, time, itertools
 from threading import local
 import os.path
 import datetime
+from datetime import date
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -214,6 +215,7 @@ def g_menuInteractive(service):
     tui.clear()
     g_sync(service) # sync up local and google calendars
     print(tui.welcome_text + "\n" + help_text + "\n")
+    tui.drawCal(date.today())
     while 1: # user input
         userInput = input(">  ")
         if userInput == "exit" or userInput == "q" or userInput == "quit": tui.clear(); exit()
@@ -229,6 +231,7 @@ def g_menuInteractive(service):
 
 # initialise a calendar and then call menu function
 def main():
+    tui.calcli.main()
     creds = None
     if os.path.exists(token_file): # load credentials from a file if already existing
         creds = Credentials.from_authorized_user_file(token_file, SCOPES)

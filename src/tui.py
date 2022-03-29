@@ -218,6 +218,7 @@ def menuInteractive():
     clear()
     calcli.sortEventsFile()
     print(welcome_text + "\n" + help_text + "\n")
+    drawCal(date.today())
     while 1: # user input
         userInput = input(">  ")
         if userInput == "exit" or userInput == "q" or userInput == "quit": clear(); exit()
