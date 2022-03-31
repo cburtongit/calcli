@@ -237,7 +237,11 @@ def main():
         creds = Credentials.from_authorized_user_file(token_file, SCOPES)
     if not creds or not creds.valid: # If there are no (valid) credentials available, prompt for user login.
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except Exception as e:
+                flow = InstalledAppFlow.from_client_secrets_file(creds_file, SCOPES)
+                creds = flow.run_local_server(port = 0)
         else:
             flow = InstalledAppFlow.from_client_secrets_file(creds_file, SCOPES)
             creds = flow.run_local_server(port = 0)

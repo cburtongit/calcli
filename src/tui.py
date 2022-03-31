@@ -33,7 +33,7 @@ def createEventInteractive():
     # Date
     done = 0
     while done == 0:
-        userDate = input("Event Date (e.g. '2022 06 01' for the 1st of June, 2022): \n")
+        userDate = input("Date (YYYY-MM-DD): \n")
         try:
             uDate = str(datetime.strptime(userDate, "%Y %m %d"))[:1-10]
             uDate = uDate.replace("-", "")
@@ -43,7 +43,7 @@ def createEventInteractive():
     # Start Time
     done = 0
     while done == 0:
-        userStartTime = input("Start time (e.g. '09:30' for 10:30AM or '20:45' for 8:45PM): ")
+        userStartTime = input("Start Time (HH:MM): ")
         try:
             uST = userStartTime.split(":")
             if len(uST[0]) < 2:
@@ -57,7 +57,7 @@ def createEventInteractive():
     # End Time
     done = 0
     while done == 0:
-        userEndTime = input("End time (e.g. '10:30' for 10:30AM or '20:45' for 8:45PM): ")
+        userEndTime = input("End Time (HH:MM): ")
         try:
             uET = userEndTime.split(":")
             if len(uET[0]) < 2:
@@ -79,7 +79,7 @@ def createEventInteractive():
             print(e)
             print("Bad formatting, Please retry.\n")
     # Description
-    userDesc = input("Event description: ")
+    userDesc = input("Event Description: ")
     try:
         start = "" + str(uST[0]) + str(uST[1])
         end = "" + str(uET[0]) + str(uET[1])
@@ -158,7 +158,7 @@ def deleteEventsInteractive():
             for index in sorted(userTargets, reverse=True):
                 del eventList[index - 1]
             done = 1
-            listEventsInteractive(eventList)
+            #listEventsInteractive(eventList)
             calcli.rewriteConfig(eventList)
         except Exception as e:
             print("Bad input, please retry.")
